@@ -1,0 +1,28 @@
+version: "3"
+services:
+  rabbit_node_1:
+    environment:
+      - RABBITMQ_ERLANG_COOKIE="YourSharedCookie"
+    hostname: rabbit_node_1
+    image: "rabbitmq:3-management"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    tty: true
+    volumes:
+      - /media/rabbit/node1:/var/lib/rabbitmq/mnesia
+      - ./conf/:/etc/rabbitmq/
+  rabbit_node_2:
+    environment:
+      - RABBITMQ_ERLANG_COOKIE="YourSharedCookie"
+    hostname: rabbit_node_2
+    depends_on:
+      - rabbit_node_1
+    image: "rabbitmq:3-management"
+    ports:
+      - "15673:15672"
+      - "5673:5672"
+    tty: true
+    volumes:
+      - /media/rabbit/node2/:/var/lib/rabbitmq/mnesia
+      - ./conf/:/etc/rabbitmq/

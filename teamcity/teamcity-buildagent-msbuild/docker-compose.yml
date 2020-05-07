@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  teamcity_agent:
+    image: spydersoft/tc-msbuild-agent:latest
+    #build: .
+    hostname: tcMsBuildAgent01
+    restart: always
+    container_name: tcMsBuildAgent01
+    environment:
+      SERVER_URL: "http://your.teamcity.server"
+    volumes:
+      - c:/data/buildagent:c:/BuildAgent/conf
+
+networks:
+  default:
+    external:
+      name: nat

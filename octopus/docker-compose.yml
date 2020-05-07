@@ -1,0 +1,21 @@
+version: '3'
+services:
+    octopus:
+        image: octopusdeploy/octopusdeploy:latest
+        container_name: octopus_server
+        ports:
+         - "1979:81"
+         - "10943:10943"
+        environment:
+         - SqlDbConnectionString="Server=your.sql.server,1433;Initial Catalog=YourDbName;Persist Security Info=False;User ID=YourDbUser;Password=YourDbPassword;MultipleActiveResultSets=False;Connection Timeout=30;"
+         - MasterKey="your.master.key"
+        restart: always
+        volumes:
+         - c:/dockerdata/octopus/TaskLogs:c:/TaskLogs
+         - c:/dockerdata/octopus/Artifacts:c:/Artifacts
+         - c:/dockerdata/octopus/Packages:c:/Repository
+
+networks:
+  default:
+    external:
+      name: nat

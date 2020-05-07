@@ -1,0 +1,20 @@
+version: "3"
+
+services:
+  docker_registry:
+    restart: always
+    image: registry:latest
+    ports:
+      - 5000:5000
+      - 443:443
+    environment:
+      REGISTRY_VALIDATION_DISABLED: "true"
+      REGISTRY_HTTP_ADDR: 0.0.0.0:443
+      REGISTRY_HTTP_TLS_CERTIFICATE: /certs/fullchain.pem
+      REGISTRY_HTTP_TLS_KEY: /certs/privkey.pem
+      REGISTRY_AUTH: htpasswd
+      REGISTRY_AUTH_HTPASSWD_PATH: /certs/htpasswd
+      REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+    volumes:
+      - /media/dockerregistry:/var/lib/registry
+      - ~/docker:/certs

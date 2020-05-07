@@ -1,0 +1,69 @@
+#-------------------------------------------------------------------------------
+# Based on documents from Gravitee.io's published docker files
+# https://github.com/gravitee-io/graviteeio-access-management
+#-------------------------------------------------------------------------------
+version: '3'
+
+volumes:
+  local_datamongo: {}
+  local_dataelasticsearch: {}
+
+services:
+  local_elasticsearch:
+    hostname: gravitee-elasticsearch
+    container_name: gravitee_elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.4.3
+    ports:
+      - "9201:9200"
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=0.0.0.0
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=false
+      - cluster.name=elasticsearch
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile: 65536
+    volumes:
+      - local_dataelasticsearch:/usr/share/elasticsearch/data
+      - ./logs/elasticsearch:/var/log/elasticsearch
+
+  local_mongodb:
+    hostname: gravitee-mongodb
+    container_name: gravitee_mongodb
+    image: mongo:3.4
+    ports:
+      - "27017:27017"
+    volumes:
+      - local_datamongo:/data/db
+      - ./logs/mongodb:/var/log/mongodb
+
+  local_managementui:
+    hostname: gravitee-managementui
+    image: graviteeio/management-ui:latest
+    container_name: gravitee_managementui
+    ports:
+      - "8002:80"
+    volumes:
+      - ./logs/management-ui:/var/log/httpd
+    environment:
+      - MGMT_API_URL=https:\/\/your.server.com\/management\/
+
+  local_managementapi:
+    hostname: gravitee-managementapi
+    image: graviteeio/management-api:latest
+    container_name: gravitee_managementapi
+    ports:
+      - "8005:8083"
+    volumes:
+      - ./logs/management-api:/home/gravitee/logs
+    links:
+      - "local_mongodb:demo-mongodb"
+      - "local_elasticsearch:demo-elasticsearch"
+    environment:
+      - gravitee_management_mongodb_uri=mongodb://docker.server.com:27017/gravitee?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000&socketTimeoutMS=5000
+      - gravitee_analytics_elasticsearch_endpoints_0=http://docker.server.com:9201

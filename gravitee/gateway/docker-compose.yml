@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  gravitee-gateway:
+    image: graviteeio/gateway:latest
+    hostname: dev-api-gateway
+    container_name: gravitee_gateway
+    restart: always
+    ports:
+      - "82:8082"
+    environment:
+      GRAVITEE_MANAGEMENT_MONGODB_URI: mongodb://your.docker.server:27017/gravitee
+      GRAVITEE_REPORTERS_ELASTICSEARCH_ENDPOINTS_0: http://your.docker.server:9201
+      GRAVITEE_TAGS: development
